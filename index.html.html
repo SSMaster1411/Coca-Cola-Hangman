@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Coca-Cola Hangman</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      color: #111;
+      text-align: center;
+    }
+
+    header {
+      background-color: #e4002b;
+      color: white;
+      padding: 20px 10px;
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5em;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    header img {
+      height: 80px;
+      margin: 0 20px;
+    }
+
+    .word {
+      font-size: 36px;
+      letter-spacing: 12px;
+      margin: 40px 0;
+      font-weight: bold;
+    }
+
+    .keyboard {
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .keyboard button {
+      margin: 5px;
+      padding: 12px 15px;
+      font-size: 18px;
+      background-color: #e4002b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .keyboard button:hover:not(:disabled) {
+      background-color: #b30022;
+    }
+
+    .keyboard button:disabled {
+      background-color: #ccc;
+      color: #555;
+      cursor: not-allowed;
+    }
+
+    .status {
+      font-size: 20px;
+      margin: 20px 0;
+    }
+
+    .wrong-letters {
+      border: 2px solid #e4002b;
+      padding: 10px;
+      margin: 20px auto;
+      width: 300px;
+      border-radius: 8px;
+      font-size: 18px;
+      background-color: #fce4e4;
+      color: #e4002b;
+    }
+
+    button.restart {
+      background-color: #111;
+      color: white;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button.restart:hover {
+      background-color: #333;
+    }
+
+    @media (max-width: 600px) {
+      .word {
+        font-size: 28px;
+      }
+
+      .keyboard button {
+        font-size: 16px;
+        padding: 10px 12px;
+      }
+
+      header {
+        font-size: 2em;
+        flex-direction: column;
+      }
+
+      header img {
+        height: 60px;
+        margin: 10px 0;
+      }
+
+      .wrong-letters {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://m.media-amazon.com/images/I/71c3dktHYHL.jpg" alt="Coca-Cola Bottle">
+    Coca-Cola Hangman
+    <img src="https://m.media-amazon.com/images/I/71c3dktHYHL.jpg" alt="Coca-Cola Bottle">
+  </header>
+
+  <div class="word" id="displayWord"></div>
+
+  <div class="keyboard" id="keyboard"></div>
+
+  <div class="wrong-letters" id="wrongLettersBox">
+    Wrong guesses: <span id="wrongLetters">None</span>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <button class="restart" onclick="restartGame()">Restart Game</button>
+
+  <script>
+    const word = "Coca-Cola";
+    let guessed = [];
+    let wrongGuesses = [];
+    let lives = 6;
+
+    function updateDisplay() {
+      const display = word.split('').map(letter =>
+        letter === '-' ? '-' : guessed.includes(letter.toLowerCase()) ? letter : '_'
+      ).join(' ');
+      document.getElementById('displayWord').textContent = display;
+
+      document.getElementById('wrongLetters').textContent = wrongGuesses.length
+        ? wrongGuesses.join(', ')
+        : 'None';
+
+      if (!display.includes('_')) {
+        document.getElementById('status').textContent = "🎉 You won! Redirecting...";
+        disableKeyboard();
+        setTimeout(() => {
+          window.location.href = "https://universitypretoria-my.sharepoint.com/:w:/g/personal/u24572854_up_ac_za/EV8o73QLqXVIh5nTaC2ioZ4Bdc1ru4vBAilis5jWgHbXXQ?e=eDkxIW";
+        }, 3000);
+      } else if (lives <= 0) {
+        document.getElementById('status').textContent = "💀 Game Over! The word was: " + word;
+        disableKeyboard();
+      }
+    }
+
+    function handleGuess(letter) {
+      letter = letter.toLowerCase();
+      if (!guessed.includes(letter)) {
+        guessed.push(letter);
+        if (!word.toLowerCase().includes(letter)) {
+          wrongGuesses.push(letter);
+          lives--;
+        }
+        updateDisplay();
+      }
+    }
+
+    function disableKeyboard() {
+      document.querySelectorAll('.keyboard button').forEach(btn => btn.disabled = true);
+    }
+
+    function createKeyboard() {
+      const keyboard = document.getElementById('keyboard');
+      keyboard.innerHTML = '';
+      for (let i = 65; i <= 90; i++) {
+        const letter = String.fromCharCode(i).toLowerCase();
+        const btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.onclick = () => handleGuess(letter);
+        keyboard.appendChild(btn);
+      }
+    }
+
+    function restartGame() {
+      guessed = [];
+      wrongGuesses = [];
+      lives = 6;
+      createKeyboard();
+      document.getElementById('status').textContent = '';
+      document.getElementById('wrongLetters').textContent = 'None';
+      updateDisplay();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const letter = e.key.toLowerCase();
+      if (letter >= 'a' && letter <= 'z') {
+        handleGuess(letter);
+      }
+    });
+
+    createKeyboard();
+    updateDisplay();
+  </script>
+
+</body>
+</html>
