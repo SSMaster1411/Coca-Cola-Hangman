@@ -1,226 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Coca-Cola Hangman</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coca-Cola Intangible Assets Quiz</title>
   <style>
     body {
-      margin: 0;
-      padding: 20px;
       font-family: Arial, sans-serif;
-      background-color: #fff;
-      color: #111;
+      background-color: #f2f2f2;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
       text-align: center;
+      color: #cc0000;
     }
-
-    header {
-      background-color: #e4002b;
-      color: white;
-      padding: 20px 10px;
-      font-family: 'Great Vibes', cursive;
-      font-size: 2.5em;
-      letter-spacing: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    header img {
-      height: 80px;
-      margin: 0 20px;
-    }
-
-    .word {
-      font-size: 36px;
-      letter-spacing: 12px;
-      margin: 40px 0;
-      font-weight: bold;
-    }
-
-    .keyboard {
-      max-width: 600px;
-      margin: 0 auto 30px auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .keyboard button {
-      margin: 5px;
-      padding: 12px 15px;
-      font-size: 18px;
-      background-color: #e4002b;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .keyboard button:hover:not(:disabled) {
-      background-color: #b30022;
-    }
-
-    .keyboard button:disabled {
-      background-color: #ccc;
-      color: #555;
-      cursor: not-allowed;
-    }
-
-    .status {
-      font-size: 20px;
-      margin: 20px 0;
-    }
-
-    .wrong-letters {
-      border: 2px solid #e4002b;
-      padding: 10px;
-      margin: 20px auto;
-      width: 300px;
+    .question {
+      background-color: #fff;
+      padding: 15px;
+      margin: 15px 0;
       border-radius: 8px;
-      font-size: 18px;
-      background-color: #fce4e4;
-      color: #e4002b;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-
-    button.restart {
-      background-color: #111;
-      color: white;
+    .options label {
+      display: block;
+      margin: 5px 0;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
       padding: 10px 20px;
-      font-size: 18px;
+      background-color: #cc0000;
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-
-    button.restart:hover {
-      background-color: #333;
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
     }
-
-    @media (max-width: 600px) {
-      .word {
-        font-size: 28px;
-      }
-
-      .keyboard button {
-        font-size: 16px;
-        padding: 10px 12px;
-      }
-
-      header {
-        font-size: 2em;
-        flex-direction: column;
-      }
-
-      header img {
-        height: 60px;
-        margin: 10px 0;
-      }
-
-      .wrong-letters {
-        width: 90%;
-      }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
+    #score {
+      font-size: 1.2em;
+      text-align: center;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
+  <h1>Coca-Cola Intangible Assets Quiz</h1>
+  <form id="quizForm"></form>
+  <button type="button" onclick="submitQuiz()" id="submitBtn">Submit Quiz</button>
+  <!-- New button to redirect -->
+  <button type="button" id="nextPageBtn" style="display:none;" onclick="goToNextPage()">Go to Next Page</button>
 
-  <header>
-    <img src="https://m.media-amazon.com/images/I/71c3dktHYHL.jpg" alt="Coca-Cola Bottle">
-    Coca-Cola Hangman
-    <img src="https://m.media-amazon.com/images/I/71c3dktHYHL.jpg" alt="Coca-Cola Bottle">
-  </header>
-
-  <div class="word" id="displayWord"></div>
-
-  <div class="keyboard" id="keyboard"></div>
-
-  <div class="wrong-letters" id="wrongLettersBox">
-    Wrong guesses: <span id="wrongLetters">None</span>
-  </div>
-
-  <div class="status" id="status"></div>
-
-  <button class="restart" onclick="restartGame()">Restart Game</button>
+  <div id="score"></div>
 
   <script>
-    const word = "Coca-Cola";
-    let guessed = [];
-    let wrongGuesses = [];
-    let lives = 6;
-
-    function updateDisplay() {
-      const display = word.split('').map(letter =>
-        letter === '-' ? '-' : guessed.includes(letter.toLowerCase()) ? letter : '_'
-      ).join(' ');
-      document.getElementById('displayWord').textContent = display;
-
-      document.getElementById('wrongLetters').textContent = wrongGuesses.length
-        ? wrongGuesses.join(', ')
-        : 'None';
-
-      if (!display.includes('_')) {
-        document.getElementById('status').textContent = "🎉 You won! Redirecting...";
-        disableKeyboard();
-        setTimeout(() => {
-          window.location.href = "https://ssmaster1411.github.io/Coca-Cola-Puzzle/";
-        }, 3000);
-      } else if (lives <= 0) {
-        document.getElementById('status').textContent = "💀 Game Over! The word was: " + word;
-        disableKeyboard();
+    const allQuestions = [
+      {
+        id: 'q1',
+        question: "Which of the following is Coca-Cola’s most valuable intangible asset?",
+        options: {
+          A: "Patents for secret formulas",
+          B: "Trademarks and brand names",
+          C: "Copyrights on advertising content",
+          D: "Franchise rights for vending machines"
+        },
+        answer: 'B',
+        type: 'mcq'
+      },
+      {
+        id: 'q2',
+        question: "Where is this asset reported in the financial statements?",
+        options: {
+          A: "As a tangible asset under PPE",
+          B: "As part of goodwill or separately as an intangible asset",
+          C: "In the revenue section",
+          D: "It’s not reported in financial statements at all"
+        },
+        answer: 'B',
+        type: 'mcq'
+      },
+      {
+        id: 'q3',
+        question: "How is Coca-Cola's trade secret (formula) treated in financial reporting?",
+        options: {
+          A: "Regularly revalued to market value",
+          B: "Amortized like a fixed asset",
+          C: "Not listed unless acquired in a business combination",
+          D: "Must be disclosed in detail"
+        },
+        answer: 'C',
+        type: 'mcq'
+      },
+      {
+        id: 'q4',
+        question: "What happens when Coca-Cola acquires a smaller company?",
+        options: {
+          A: "Increase in tangible assets only",
+          B: "Increase in goodwill and possibly other intangibles",
+          C: "Decrease in total assets",
+          D: "Immediate expense recorded under marketing"
+        },
+        answer: 'B',
+        type: 'mcq'
+      },
+      {
+        id: 'q5',
+        question: "How does Coca-Cola legally protect its brand?",
+        options: {
+          A: "Through annual insurance contracts",
+          B: "Through patents",
+          C: "Through trademarks and copyright protections",
+          D: "Through secret licensing agreements"
+        },
+        answer: 'C',
+        type: 'mcq'
+      },
+      {
+        id: 'q6',
+        question: "The Coca-Cola Company capitalizes internally generated brand value as an intangible asset.",
+        options: {
+          True: "True",
+          False: "False"
+        },
+        answer: 'False',
+        type: 'tf'
+      },
+      {
+        id: 'q7',
+        question: "Selling trademark rights would generate revenue under operating income.",
+        options: {
+          True: "True",
+          False: "False"
+        },
+        answer: 'False',
+        type: 'tf'
+      },
+      {
+        id: 'q8',
+        question: 'Trademarks like "Coca-Cola" and "Sprite" are renewable and protectable indefinitely.',
+        options: {
+          True: "True",
+          False: "False"
+        },
+        answer: 'True',
+        type: 'tf'
+      },
+      {
+        id: 'q9',
+        question: "Patents protect Coca-Cola's secret formula for Coke.",
+        options: {
+          True: "True",
+          False: "False"
+        },
+        answer: 'False',
+        type: 'tf'
+      },
+      {
+        id: 'q10',
+        question: "Goodwill is amortized over a fixed period like other intangible assets.",
+        options: {
+          True: "True",
+          False: "False"
+        },
+        answer: 'False',
+        type: 'tf'
       }
+    ];
+
+    function getRandomQuestions(arr, num) {
+      const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, num);
     }
 
-    function handleGuess(letter) {
-      letter = letter.toLowerCase();
-      if (!guessed.includes(letter)) {
-        guessed.push(letter);
-        if (!word.toLowerCase().includes(letter)) {
-          wrongGuesses.push(letter);
-          lives--;
+    const selectedQuestions = getRandomQuestions(allQuestions, 7);
+
+    const quizForm = document.getElementById('quizForm');
+    selectedQuestions.forEach((q, index) => {
+      const qNum = index + 1;
+      const div = document.createElement('div');
+      div.classList.add('question');
+      div.id = q.id;
+
+      let html = `<p>${qNum}. ${q.question}</p><div class="options">`;
+
+      if (q.type === 'mcq') {
+        for (const [key, val] of Object.entries(q.options)) {
+          html += `<label><input type="radio" name="${q.id}" value="${key}"> ${key}) ${val}</label>`;
         }
-        updateDisplay();
+      } else if (q.type === 'tf') {
+        html += `<label><input type="radio" name="${q.id}" value="True"> True</label>`;
+        html += `<label><input type="radio" name="${q.id}" value="False"> False</label>`;
       }
-    }
 
-    function disableKeyboard() {
-      document.querySelectorAll('.keyboard button').forEach(btn => btn.disabled = true);
-    }
-
-    function createKeyboard() {
-      const keyboard = document.getElementById('keyboard');
-      keyboard.innerHTML = '';
-      for (let i = 65; i <= 90; i++) {
-        const letter = String.fromCharCode(i).toLowerCase();
-        const btn = document.createElement('button');
-        btn.textContent = letter;
-        btn.onclick = () => handleGuess(letter);
-        keyboard.appendChild(btn);
-      }
-    }
-
-    function restartGame() {
-      guessed = [];
-      wrongGuesses = [];
-      lives = 6;
-      createKeyboard();
-      document.getElementById('status').textContent = '';
-      document.getElementById('wrongLetters').textContent = 'None';
-      updateDisplay();
-    }
-
-    document.addEventListener('keydown', (e) => {
-      const letter = e.key.toLowerCase();
-      if (letter >= 'a' && letter <= 'z') {
-        handleGuess(letter);
-      }
+      html += `</div><div class="feedback" id="f${q.id}"></div>`;
+      div.innerHTML = html;
+      quizForm.appendChild(div);
     });
 
-    createKeyboard();
-    updateDisplay();
-  </script>
+    function submitQuiz() {
+      let score = 0;
+      let allAnswered = true;
 
+      selectedQuestions.forEach((q) => {
+        const userAnswer = document.querySelector(`input[name="${q.id}"]:checked`);
+        const feedback = document.getElementById('f' + q.id);
+        if (!userAnswer) {
+          feedback.textContent = 'Please select an answer.';
+          feedback.className = 'feedback incorrect';
+          allAnswered = false;
+          return;
+        }
+        if (userAnswer.value === q.answer) {
+          feedback.textContent = 'Correct!';
+          feedback.className = 'feedback correct';
+          score++;
+        } else {
+          feedback.textContent = `Incorrect. Correct answer: ${q.answer}`;
+          feedback.className = 'feedback incorrect';
+        }
+      });
+
+      if (!allAnswered) {
+        document.getElementById('score').textContent = "Please answer all questions before submitting.";
+        return;
+      }
+
+      document.getElementById('score').textContent = `You scored ${score} out of ${selectedQuestions.length}.`;
+
+      // Show the next page button after grading
+      document.getElementById('nextPageBtn').style.display = 'block';
+      // Disable the submit button to prevent resubmitting
+      document.getElementById('submitBtn').disabled = true;
+    }
+
+    function goToNextPage() {
+      window.location.href = 'https://ssmaster1411.github.io/Coca-Cola-Puzzle/';
+    }
+  </script>
 </body>
 </html>
